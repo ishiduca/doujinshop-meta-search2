@@ -99,6 +99,58 @@ function check (o, actionsUp) {
   `
 }
 
+//function rates (o, actionsUp) {
+//  var first = [0, 0, 0, 0, 0]
+//  var onmouseover = first.slice(0)
+//  var el = render()
+//  return el
+//
+//  function update () {
+//console.log('UPDATE!!')
+//    el = html.update(el, render())
+//  }
+//
+//  function over (i) {
+//    onmouseover = first.map((f, n) => (n > i) ? 0 : 1)
+//    update()
+//  }
+//
+//  function out () {
+//    onmouseover = first.slice(0)
+//    update()
+//  }
+//
+//  function render () {
+//    return html `
+//      <div>
+//        ${onmouseover.map((flg, i) => {
+//          var cls = ['fa']
+//          if (o.meta.favs[i]) cls.push('fa-star')
+//          else cls.push('fa-star-o')
+//          if (onmouseover[i]) cls.push('onmouseover')
+//
+//          return html `
+//            <div class=${prefixButton}>
+//              <a
+//                href="javascript:void(0)"
+//                onclick=${e => {
+//                  actionsUp('storage:addFavs', o.product, i + 1)
+//                }}
+//                onmouseover=${e => over(i)}
+//                onmouseout=${e => out()}
+//              >
+//                <i class=${cls.join(' ')}></i>
+//              </a>
+//            </div>
+//          `
+//        })
+//      }
+//      </div>
+//    `
+//  }
+//}
+
+
 function rate (o, index, actionsUp) {
   var cls = ['fa']
   if (o.meta.favs[index]) cls.push('fa-star')
@@ -110,16 +162,6 @@ function rate (o, index, actionsUp) {
       <a
         href="javascript:void(0)"
         onclick=${e => actionsUp('storage:addFavs', o.product, index + 1)}
-        onmouseover=${e => {
-          e.stopPropagation()
-          actionsUp('storeMetaSearch:onFavsMouseOver', [o, index])
-          actionsUp('storeSublist:onFavsMouseOver', [o, index])
-        }}
-        onmouseout=${e => {
-          e.stopPropagation()
-          actionsUp('storeMetaSearch:onFavsMouseOut', o)
-          actionsUp('storeSublist:onFavsMouseOut', o)
-        }}
       >
         <i class=${cls.join(' ')}></i>
       </a>

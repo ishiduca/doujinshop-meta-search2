@@ -33,6 +33,7 @@ app.reduce(xtend(
 app.use(require('./api/parser'))
 app.use(require('./api/websocket'))
 app.use(require('./api/storage'))
+app.use(require('./api/link'))
 app.use(require('./api/notifier'))
 app.use(require('./api/logger'))
 

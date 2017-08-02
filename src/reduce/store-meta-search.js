@@ -29,7 +29,7 @@ module.exports = {
     } else {
       var n = storeMetaSearch[id].services.map(m).indexOf(res.service)
       if (n === -1) {
-        storeMetaSearch[id].services.push(res)
+        storeMetaSearch[id].services = [res].concat(storeMetaSearch[id].services)
       } else {
         storeMetaSearch[id].services[n] = res
       }
