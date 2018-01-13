@@ -4,4 +4,6 @@ npm-debug.log*
 node_modules
 static/js
 static/css
+voodoo/components/css
+db
 package-lock.json
