@@ -38,7 +38,7 @@ module.exports = function (proxy, actionsUp) {
           <header>
             <h4 class="title is-4">${o.service} (${o.list.length})</h4>
             ${empty(o.request, () => yo`
-              <p class="subtitle is-4">
+              <p>
                 ${link(o.request, o.request)}
               </p>
             `)}

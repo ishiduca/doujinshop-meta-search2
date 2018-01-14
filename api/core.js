@@ -1,5 +1,6 @@
 var missi = require('mississippi')
 var xtend = require('xtend')
+var afterAll = require('after-all')
 
 module.exports = function (opt) {
   return {
@@ -41,31 +42,57 @@ module.exports = function (opt) {
 
     var query = genKey(params)
     var reads = missi.through.obj()
-    var i = 0
+    var next = afterAll(e => (reads.end()))
 
     Object.keys(opt.services).map(name => {
       var service = opt.services[name]
-      var stream = service.createStream()
-      i += 1
-
+      var s = service.createStream()
+      var cb = next()
       missi.pipe(
-        stream,
-        missi.through.obj((result, _, done) => {
+        s, missi.through.obj((result, _, done) => {
           reads.write(xtend(result, {query: query}))
           done()
-        }),
-        err => {
-          i -= 1
-          if (err) reads.emit('error', err)
-          if (i === 0) reads.end()
-        }
+        }), err => (err ? reads.emit('error', err) : cb())
       )
-
-      stream.end(params)
+      s.end(params)
     })
 
     return reads
   }
+
+//  function metasearch (params) {
+//    addCount(params, (err, q) => {
+//      if (err) return console.error(err)
+//      else console.log(`[dbs.request]:count "${q.key}" => ${q.count}`)
+//    })
+//
+//    var query = genKey(params)
+//    var reads = missi.through.obj()
+//    var i = 0
+//
+//    Object.keys(opt.services).map(name => {
+//      var service = opt.services[name]
+//      var stream = service.createStream()
+//      i += 1
+//
+//      missi.pipe(
+//        stream,
+//        missi.through.obj((result, _, done) => {
+//          reads.write(xtend(result, {query: query}))
+//          done()
+//        }),
+//        err => {
+//          i -= 1
+//          if (err) reads.emit('error', err)
+//          if (i === 0) reads.end()
+//        }
+//      )
+//
+//      stream.end(params)
+//    })
+//
+//    return reads
+//  }
 
   function search (params) {
     addCount(params.params, (err, q) => {
