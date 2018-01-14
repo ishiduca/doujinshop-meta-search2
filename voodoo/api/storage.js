@@ -80,11 +80,11 @@ module.exports = function (emitter, proxy, opt) {
     })
   })
 
-  emitter.on('storage:getFavsList', rate => {
-    api.getFavsList(rate, (err, wrapList) => {
+  emitter.on('storage:getFavsList', p => {
+    api.getFavsList(p.rate, (err, wrapList) => {
       if (err) return emitter.emit('error', err)
 
-      var q = `favs ${rate || 'all'}`
+      var q = `favs ${p.rate || 'all'}`
       store[q] = [{
         query: q,
         service: 'localStorage',

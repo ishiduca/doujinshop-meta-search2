@@ -1,6 +1,6 @@
 {
   "name": "doujinshop-meta-search2",
-  "version": "0.0.3",
+  "version": "0.2.1",
   "scripts": {
     "pretest": "standard",
     "test": "node_modules/tape/bin/tape t/*.js | node_modules/tap-spec/bin/cmd.js",

@@ -17,7 +17,7 @@ Favs.prototype._parse = function (str) {
   if (isNaN(rate)) rate = null
 
   if (favs === '!favs') {
-    var o = {command: 'storage:getFavs', params: {rate: rate}}
+    var o = {command: 'storage:getFavsList', params: {rate: rate}}
     var flg = this.validate(o.params, {verbose: true})
     if (flg) return o
     else return {errors: this.validate.errors}
