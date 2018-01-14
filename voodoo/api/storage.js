@@ -1,15 +1,20 @@
 var xtend = require('xtend')
-var StorageApi = require('./storage-prototype')
 
 module.exports = function (emitter, proxy, opt) {
-  var api = new StorageApi(opt.storages, opt.opt)
+  var api = opt.storage
   var store = {}
   var selector = '#HERO'
 
-  emitter.on('storage:wrapList', result => {
-    api.wrapList(result.list, (err, wrapList) => {
-      if (err) return emitter.emit('error', err)
+  function domain (f) {
+    return (...args) => {
+      var err = args.shift()
+      if (err == null) f.apply(null, args)
+      else emitter.emit('error', err)
+    }
+  }
 
+  emitter.on('storage:wrapList', result => {
+    api.wrapList(result.list, domain(wrapList => {
       var r = xtend(result, {list: wrapList})
       var q = result.query
 
@@ -23,13 +28,11 @@ module.exports = function (emitter, proxy, opt) {
       emitter.emit('resume')
 
       console.log(proxy)
-    })
+    }))
   })
 
   emitter.on('storage:changeFavsRate', (product, r, q) => {
-    api.changeFavsRate(product, r, (err, wrapProduct) => {
-      if (err) return emitter.emit('error', err)
-
+    api.changeFavsRate(product, r, domain(wrapProduct => {
       emitter.emit('notifier:notify', {
         name: 'apiStorage.changeFavsRate',
         message: `${product.title} => "${r}"`
@@ -37,13 +40,11 @@ module.exports = function (emitter, proxy, opt) {
 
       find(product, wp => (wp.rate = api.rateToArray(r)))
       proxy.resultMetaSearch = {query: q, _: store[q]}
-    })
+    }))
   })
 
   emitter.on('storage:toggleDone', (product, q) => {
-    api.toggleDone(product, (err, wrapProduct) => {
-      if (err) return emitter.emit('error', err)
-
+    api.toggleDone(product, domain(wrapProduct => {
       emitter.emit('notifier:notify', {
         name: 'apiStorage.toggleDone',
         message: `${product.title} => "${wrapProduct.done}"`
@@ -51,8 +52,18 @@ module.exports = function (emitter, proxy, opt) {
 
       find(product, wp => (wp.done = wrapProduct.done))
       proxy.resultMetaSearch = {query: q, _: store[q]}
-    })
+    }))
   })
+
+  function find (product, f) {
+    Object.keys(store).forEach(qs => {
+      store[qs].forEach(result => {
+        result.list.forEach(wrapProduct => {
+          if (wrapProduct.id === product.urlOfTitle) f(wrapProduct)
+        })
+      })
+    })
+  }
 
   function scroll () {
     emitter.emit('dom:smoothScroll', selector)
@@ -65,9 +76,7 @@ module.exports = function (emitter, proxy, opt) {
   })
 
   emitter.on('storage:getDoneList', () => {
-    api.getDoneList((err, wrapList) => {
-      if (err) return emitter.emit('error', err)
-
+    api.getDoneList(domain(wrapList => {
       var q = 'done'
       store[q] = [{
         query: q,
@@ -77,13 +86,11 @@ module.exports = function (emitter, proxy, opt) {
       }]
       proxy.resultMetaSearch = {query: q, _: store[q]}
       scroll()
-    })
+    }))
   })
 
   emitter.on('storage:getFavsList', p => {
-    api.getFavsList(p.rate, (err, wrapList) => {
-      if (err) return emitter.emit('error', err)
-
+    api.getFavsList(p.rate, domain(wrapList => {
       var q = `favs ${p.rate || 'all'}`
       store[q] = [{
         query: q,
@@ -93,16 +100,6 @@ module.exports = function (emitter, proxy, opt) {
       }]
       proxy.resultMetaSearch = {query: q, _: store[q]}
       scroll()
-    })
+    }))
   })
-
-  function find (product, f) {
-    Object.keys(store).forEach(qs => {
-      store[qs].forEach(result => {
-        result.list.forEach(wrapProduct => {
-          if (wrapProduct.id === product.urlOfTitle) f(wrapProduct)
-        })
-      })
-    })
-  }
 }

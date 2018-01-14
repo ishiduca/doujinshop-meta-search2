@@ -1,7 +1,5 @@
-var Notifier = require('./notifier')
-
 module.exports = function (emitter, proxy, opt) {
-  var notifier = new Notifier(opt)
+  var notifier = opt.notifier
   var lock = true
 
   emitter.once('DOMContentLoaded', () => (lock = false))
