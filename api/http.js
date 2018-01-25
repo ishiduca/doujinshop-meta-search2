@@ -8,6 +8,9 @@ module.exports = function (opt) {
     search (req, res, params) {
       p(api.search(params), req, res, params)
     },
+    deleteQuery (req, res, params) {
+      p(api.deleteQuery(params), req, res, params)
+    },
     listupQueries (req, res, params) {
       p(api.listupQueries(params), req, res, params)
     }

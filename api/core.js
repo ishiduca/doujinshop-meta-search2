@@ -6,11 +6,25 @@ module.exports = function (opt) {
   return {
     search: search,
     metasearch: metasearch,
+    deleteQuery: deleteQuery,
     listupQueries: listupQueries
   }
 
   function genKey (p) {
     return `${p.category}:${p.value.toLowerCase()}`
+  }
+
+  function deleteQuery (params) {
+    return new Promise((resolve, reject) => {
+      var key = params.query
+      opt.dbs.request.get(key, (err, count) => {
+        if (err) return reject(err)
+        opt.dbs.request.del(key, (err) => {
+          if (err) return reject(err)
+          else resolve({query: key, remove: true})
+        })
+      })
+    })
   }
 
   function listupQueries (params) {
@@ -59,40 +73,6 @@ module.exports = function (opt) {
 
     return reads
   }
-
-//  function metasearch (params) {
-//    addCount(params, (err, q) => {
-//      if (err) return console.error(err)
-//      else console.log(`[dbs.request]:count "${q.key}" => ${q.count}`)
-//    })
-//
-//    var query = genKey(params)
-//    var reads = missi.through.obj()
-//    var i = 0
-//
-//    Object.keys(opt.services).map(name => {
-//      var service = opt.services[name]
-//      var stream = service.createStream()
-//      i += 1
-//
-//      missi.pipe(
-//        stream,
-//        missi.through.obj((result, _, done) => {
-//          reads.write(xtend(result, {query: query}))
-//          done()
-//        }),
-//        err => {
-//          i -= 1
-//          if (err) reads.emit('error', err)
-//          if (i === 0) reads.end()
-//        }
-//      )
-//
-//      stream.end(params)
-//    })
-//
-//    return reads
-//  }
 
   function search (params) {
     addCount(params.params, (err, q) => {

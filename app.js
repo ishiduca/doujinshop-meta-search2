@@ -28,10 +28,15 @@ var dbs = {
 
 var api = require('./api/http')({services: services, dbs: dbs})
 var apiWs = require('./api/ws')({services: services, dbs: dbs})
-var schema = require('./schema/request/search')
+var schemas = {
+  search: require('./schema/request/search'),
+  deleteQuery: require('./schema/request/delete-query')
+}
 
-router.def('/search', post(valid(schema, api.search, sendError), sendError))
+router.def('/search', post(valid(schemas.search, api.search, sendError), sendError))
 router.def('/listup/queries', api.listupQueries)
+// router.def('/delete/query/:query', valid(schemas.deleteQuery, api.deleteQuery, sendError))
+router.def('/delete/query', post(valid(schemas.deleteQuery, api.deleteQuery, sendError), sendError))
 
 wsr.add('metasearch', apiWs.metasearch)
 wsr.add('listupQueries', apiWs.listupQueries)
