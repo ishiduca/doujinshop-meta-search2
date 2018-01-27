@@ -6,7 +6,7 @@ module.exports = function () {
       <div class="hero-body">
         <div class="container">
           <h1 class="title is-1">doujinshop::meta::search::v2</h1>
-          <h2 class="subtitle is-4">v0.0.3</h2>
+          <h2 class="subtitle is-4">v0.3.4</h2>
         </div>
       </div>
     </section>

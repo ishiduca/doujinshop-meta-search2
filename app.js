@@ -43,4 +43,4 @@ wsr.add('listupQueries', apiWs.listupQueries)
 
 var app = (module.exports = http.createServer(router.onRequest(ecstatic)))
 
-websocket.createServer({server: app}, ds => ds.pipe(wsr.route()).pipe(ds))
+websocket.createServer({server: app}, ds => ds.on('error', console.error.bind(console)).pipe(wsr.route()).pipe(ds))
